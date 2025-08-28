@@ -27,6 +27,16 @@ const deleteTask = async (id) => {
     loadTasks();
 }
 
+const updateTask = async (task) => {
+    const { id, title, status } = task;
+    await fetch(`http://localhost:3000/tasks/${id}`, {
+        method: 'put',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ title, status }),
+    })
+    loadTasks();
+}
+
 const createElement = (tag, innerText = '', innerHTML = '') => {
     const element = document.createElement(tag);
     if (innerText) {
@@ -51,7 +61,7 @@ const createSelect = (value) => {
 }
 
 const formatDate = (dateUTC) => {
-    const options = {DataStyle: 'long', TimeStyle: 'short'};
+    const options = { DataStyle: 'long', TimeStyle: 'short' };
     const date = new Date(dateUTC).toLocaleString(options);
     return date;
 
@@ -71,10 +81,29 @@ const createRow = (task) => {
     const tdStatus = createElement('td');
     const tdActions = createElement('td');
     const select = createSelect(status);
+    select.addEventListener('change', ({ target }) => updateTask({ id, title, created_at, status: target.value }));
 
     //botões de ação
     const editButton = createElement('button', '', '<span class="material-symbols-outlined"> edit </span>');
     const deleteButton = createElement('button', '', '<span class="material-symbols-outlined"> delete </span>');
+
+    const editForm = createElement('form');
+    const editInput = createElement('input');
+
+    editInput.value = title;
+
+    editForm.appendChild(editInput);
+
+    editForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        updateTask({id, title: editInput.value, status,});
+    });
+
+    editButton.addEventListener('click', () => {
+        tdTitle.innerText = '';
+        tdTitle.appendChild(editForm);
+    });
+
     editButton.className = 'btn-action';
     deleteButton.className = 'btn-action';
     deleteButton.addEventListener('click', () => deleteTask(id));
