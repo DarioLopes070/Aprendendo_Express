@@ -60,6 +60,16 @@ const createSelect = (value) => {
 
 }
 
+const changeRowColor = (tr, status) => {
+    if (status === "Concluido") {
+        tr.style.backgroundColor = "lightgreen";
+    } else if (status === "pending") {
+        tr.style.backgroundColor = "lightcoral";
+    } else {
+        tr.style.backgroundColor = "lightblue"; // volta ao normal
+    }
+};
+
 const formatDate = (dateUTC) => {
     const options = { DataStyle: 'long', TimeStyle: 'short' };
     const date = new Date(dateUTC).toLocaleString(options);
@@ -96,7 +106,7 @@ const createRow = (task) => {
 
     editForm.addEventListener('submit', (event) => {
         event.preventDefault();
-        updateTask({id, title: editInput.value, status,});
+        updateTask({ id, title: editInput.value, status, });
     });
 
     editButton.addEventListener('click', () => {
@@ -112,6 +122,7 @@ const createRow = (task) => {
 
     tdStatus.appendChild(select);
 
+    changeRowColor(tr, status);
     //montando a linha
     tr.appendChild(tdTitle);
     tr.appendChild(tdCreatedAt);
