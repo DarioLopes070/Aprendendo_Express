@@ -70,6 +70,24 @@ const changeRowColor = (tr, status) => {
     }
 };
 
+const moveRow = (tr, status) => {
+    if (status === "pending") {
+        tbody.prepend(tr); // vai pro topo
+    } else if (status === "em andamento") {
+        // procura o último "pending" e insere depois dele
+        const pendings = [...tbody.querySelectorAll('tr')]
+            .filter(row => row.querySelector('select').value === "pending");
+
+        if (pendings.length > 0) {
+            pendings[pendings.length - 1].after(tr);
+        } else {
+            tbody.prepend(tr);
+        }
+    } else if (status === "Concluido") {
+        tbody.appendChild(tr); // vai pro final
+    }
+};
+
 const formatDate = (dateUTC) => {
     const options = { DataStyle: 'long', TimeStyle: 'short' };
     const date = new Date(dateUTC).toLocaleString(options);
@@ -92,6 +110,16 @@ const createRow = (task) => {
     const tdActions = createElement('td');
     const select = createSelect(status);
     select.addEventListener('change', ({ target }) => updateTask({ id, title, created_at, status: target.value }));
+    // select.addEventListener('change', ({ target }) => {
+    //     const newStatus = target.value;
+    //     updateTask({ id, title, created_at, status: newStatus });
+
+    //     // muda a cor da linha
+    //     changeRowColor(tr, newStatus);
+
+    //     // reposiciona a linha
+    //     moveRow(tr, newStatus);
+    // });
 
     //botões de ação
     const editButton = createElement('button', '', '<span class="material-symbols-outlined"> edit </span>');
@@ -130,6 +158,22 @@ const createRow = (task) => {
     tr.appendChild(tdActions);
 
     tbody.appendChild(tr);
+
+    if (status === "pending") {
+        tbody.prepend(tr); // vai pro topo
+    } else if (status === "em andamento") {
+        // procura o último "pending" e insere depois dele
+        const pendings = [...tbody.querySelectorAll('tr')]
+            .filter(row => row.querySelector('select').value === "pending");
+
+        if (pendings.length > 0) {
+            pendings[pendings.length - 1].after(tr);
+        } else {
+            tbody.prepend(tr);
+        }
+    } else if (status === "Concluido") {
+        tbody.appendChild(tr); // vai pro final
+    }
 }
 
 const loadTasks = async () => {
